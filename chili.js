@@ -50,7 +50,7 @@ export async function resourceGetTreeLevel(type, path, apikey, url) {
     };
     try {
         const response = await fetch(
-            url + `/resources/${type}/treelevel?parentFolder=${path}&numLevels=1&includeSubDirectories=false&includeFiles=true`, {
+            url + `/resources/${type}/treelevel?parentFolder=${path}&numLevels=1&includeSubDirectories=true&includeFiles=true`, {
             method: "GET",
             headers: {
                 "api-key": apikey

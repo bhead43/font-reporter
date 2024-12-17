@@ -1,4 +1,5 @@
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
+import { resourceGetTreeLevel } from "./chili.js";
 
 export function jsonifyChiliResponse(response, namePrefix = "") {
     const fastXmlParser = new XMLParser({
@@ -72,5 +73,5 @@ export async function getResourceInfo(tree, type, resources, apikey, baseurl) {
 // Build output CSV file name
 export function buildResultFileName(environment, directory) {
     const regex = /[/\\ ]/;
-    return `${environment}_${(directory.replace(regex, "")) == "" ? "" : `_${directory}`}.csv`
+    return `${environment}${(directory.replace(regex, "")) == "" ? "" : `_${directory}`}.csv`
 }

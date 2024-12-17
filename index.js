@@ -41,42 +41,46 @@ for(let i = 0; i < resources.length; i++){
     const fontStart = docXML.indexOf("<fonts>") + 7;
     let fontEnd = docXML.indexOf("</fonts>");
     // jsonifyChiliResponse just parses XML as JSON
-    let fontsJSON = jsonifyChiliResponse(docXML.substring(fontStart, fontEnd));
-
-    // For each font in the base document:
-    //  - Check if the font is in the swap list
-    //  - If it is, add that XML string to the removals list and add XML string for new font to additions list
     try {
-        fontsJSON.forEach(font => {
-            // Check if this ID is already in the found font list
-            let search = fonts.find(({id}) => id == font.id);
-            if(search){
-                // Check if config has a font search target
-                if(config.fontToSearch === "" || font.name === config.fontToSearch){
-                    search.documents.push(resources[i]);
+        let fontsJSON = jsonifyChiliResponse(docXML.substring(fontStart, fontEnd));
+    
+        // For each font in the base document:
+        //  - Check if the font is in the swap list
+        //  - If it is, add that XML string to the removals list and add XML string for new font to additions list
+        try {
+            fontsJSON.forEach(font => {
+                // Check if this ID is already in the found font list
+                let search = fonts.find(({id}) => id == font.id);
+                if(search){
+                    // Check if config has a font search target
+                    if(config.fontToSearch === "" || font.name === config.fontToSearch){
+                        search.documents.push(resources[i]);
+                    }
+                } else {
+                    if(config.fontToSearch === "" || font.name === config.fontToSearch){
+                        let foundFont = {id: font.id, name: font.name, documents: [resources[i]]};
+                        fonts.push(foundFont);
+                    }
                 }
-            } else {
-                if(config.fontToSearch === "" || font.name === config.fontToSearch){
-                    let foundFont = {id: font.id, name: font.name, documents: [resources[i]]};
-                    fonts.push(foundFont);
+            });
+        } catch (e) {
+            if(e instanceof TypeError) {
+                let search = fonts.find(({id}) => id == fontsJSON.id);
+                if(search) {
+                    if(config.fontToSearch === "" || fontsJSON.name === config.fontToSearch){
+                        search.documents.push(resources[i]);
+                    }
+                } else {
+                    if(config.fontToSearch === "" || fontsJSON.name === config.fontToSearch){
+                        let foundFont = {id: fontsJSON.id, name: fontsJSON.name, documents: [resources[i]]};
+                        fonts.push(foundFont);
+                    }
                 }
+    
             }
-        });
-    } catch (e) {
-        if(e instanceof TypeError) {
-            let search = fonts.find(({id}) => id == fontsJSON.id);
-            if(search) {
-                if(config.fontToSearch === "" || fontsJSON.name === config.fontToSearch){
-                    search.documents.push(resources[i]);
-                }
-            } else {
-                if(config.fontToSearch === "" || fontsJSON.name === config.fontToSearch){
-                    let foundFont = {id: fontsJSON.id, name: fontsJSON.name, documents: [resources[i]]};
-                    fonts.push(foundFont);
-                }
-            }
-
         }
+    } catch(e) {
+        console.log(e.message + ` on document ${resources[i]}`);
     }
 }
 
